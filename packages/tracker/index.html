@@ -10,127 +10,247 @@
         padding: 0;
         box-sizing: border-box;
       }
+      :root {
+        --primary-color: #2563eb;
+        --primary-hover: #1d4ed8;
+        --success-color: #059669;
+        --success-hover: #047857;
+        --bg-primary: #0f172a;
+        --bg-secondary: #1e293b;
+        --bg-card: #ffffff;
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #64748b;
+        --border-color: #e2e8f0;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+      }
       body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        padding: 20px;
-        background: #f5f5f5;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        padding: 24px;
+        background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        min-height: 100vh;
+        color: var(--text-primary);
+        line-height: 1.6;
       }
       .container {
         max-width: 1200px;
         margin: 0 auto;
       }
       h1 {
-        color: #333;
-        margin-bottom: 20px;
+        color: var(--text-primary);
+        margin-bottom: 32px;
+        font-size: 32px;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #7c3aed 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
       }
       .section {
-        background: white;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: var(--bg-card);
+        border-radius: var(--radius-lg);
+        padding: 24px;
+        margin-bottom: 24px;
+        box-shadow: var(--shadow-lg);
+        border: 1px solid var(--border-color);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .section:hover {
+        box-shadow:
+          0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        transform: translateY(-2px);
       }
       h2 {
-        color: #666;
-        margin-bottom: 15px;
-        font-size: 18px;
+        color: var(--text-primary);
+        margin-bottom: 20px;
+        font-size: 20px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       .btn {
         padding: 12px 24px;
-        margin: 5px;
+        margin: 6px;
         border: none;
-        border-radius: 6px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
         font-size: 14px;
-        transition: all 0.2s;
+        font-weight: 500;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: var(--shadow-sm);
+        position: relative;
+        overflow: hidden;
+      }
+      .btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+      }
+      .btn:hover::before {
+        left: 100%;
+      }
+      .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+      }
+      .btn:active {
+        transform: translateY(0);
       }
       .btn-primary {
-        background: #1890ff;
+        background: linear-gradient(135deg, var(--primary-color) 0%, #3b82f6 100%);
         color: white;
       }
       .btn-primary:hover {
-        background: #40a9ff;
+        background: linear-gradient(135deg, var(--primary-hover) 0%, #2563eb 100%);
       }
       .btn-success {
-        background: #52c41a;
+        background: linear-gradient(135deg, var(--success-color) 0%, #10b981 100%);
         color: white;
       }
       .btn-success:hover {
-        background: #73d13d;
+        background: linear-gradient(135deg, var(--success-hover) 0%, #059669 100%);
       }
       .exposure-box {
-        height: 300px;
+        height: 320px;
         overflow-y: auto;
-        border: 1px solid #ddd;
-        border-radius: 6px;
-        padding: 10px;
-        margin-bottom: 20px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        margin-bottom: 24px;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        box-shadow: var(--shadow-sm);
+      }
+      .exposure-box::-webkit-scrollbar {
+        width: 8px;
+      }
+      .exposure-box::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 4px;
+      }
+      .exposure-box::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
       }
       .exposure-item {
         height: 200px;
         margin-bottom: 20px;
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        border-radius: 8px;
+        background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+        border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
         color: white;
         font-size: 20px;
         font-weight: bold;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        cursor: pointer;
+      }
+      .exposure-item:hover {
+        transform: scale(1.02);
+        box-shadow: var(--shadow-lg);
       }
       .event-log {
         max-height: 300px;
         overflow-y: auto;
-        background: #1e1e1e;
-        color: #d4d4d4;
-        padding: 15px;
-        border-radius: 6px;
-        font-family: "Monaco", "Menlo", monospace;
-        font-size: 12px;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        color: #e2e8f0;
+        padding: 20px;
+        border-radius: var(--radius-md);
+        font-family: "Monaco", "Menlo", "Consolas", monospace;
+        font-size: 13px;
         line-height: 1.6;
+        border: 1px solid #334155;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
       }
-      .event-item {
-        margin-bottom: 8px;
-        padding: 8px;
-        background: #2d2d2d;
+      .event-log::-webkit-scrollbar {
+        width: 8px;
+      }
+      .event-log::-webkit-scrollbar-track {
+        background: #1e293b;
         border-radius: 4px;
       }
+      .event-log::-webkit-scrollbar-thumb {
+        background: #475569;
+        border-radius: 4px;
+      }
+      .event-log::-webkit-scrollbar-thumb:hover {
+        background: #64748b;
+      }
+      .event-item {
+        margin-bottom: 12px;
+        padding: 12px;
+        background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+        border-radius: var(--radius-sm);
+        border-left: 4px solid var(--primary-color);
+        transition: all 0.2s ease;
+      }
+      .event-item:hover {
+        background: linear-gradient(135deg, #334155 0%, #475569 100%);
+        transform: translateX(4px);
+      }
       .event-type {
-        color: #4ec9b0;
+        color: #22d3ee;
         font-weight: bold;
+        font-size: 14px;
       }
       .event-cls {
-        color: #ce9178;
+        color: #fbbf24;
+        font-weight: 500;
       }
       .event-time {
         color: #6a9955;
         font-size: 11px;
+        margin-top: 8px;
       }
       .stats {
         display: flex;
-        gap: 20px;
-        margin-bottom: 15px;
+        gap: 24px;
+        margin-bottom: 24px;
       }
       .stat-item {
-        background: #f0f2f5;
-        padding: 15px 25px;
-        border-radius: 6px;
+        background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        padding: 20px 30px;
+        border-radius: var(--radius-md);
         text-align: center;
+        border: 1px solid #93c5fd;
+        transition: all 0.2s ease;
+        flex: 1;
+      }
+      .stat-item:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
       }
       .stat-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #1890ff;
+        font-size: 32px;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin-bottom: 4px;
       }
       .stat-label {
         font-size: 12px;
-        color: #666;
-        margin-top: 5px;
+        color: var(--text-secondary);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
       }
       .hint {
-        color: #999;
-        font-size: 12px;
-        margin-top: 10px;
+        color: var(--text-muted);
+        font-size: 13px;
+        margin-top: 12px;
+        font-style: italic;
       }
     </style>
   </head>
@@ -139,35 +259,35 @@
       <h1>📊 埋点模块测试</h1>
 
       <div class="section">
-        <h2>点击事件测试</h2>
+        <h2>🖱️ 点击事件测试</h2>
         <p class="hint">点击下方按钮，事件将被记录并显示在事件日志中</p>
         <div>
           <button class="btn btn-primary" data-cls="btn-click-1" data-cls-ext='{"position":"top","color":"blue"}'>
-            按钮 1
+            🎯 按钮 1
           </button>
           <button class="btn btn-primary" data-cls="btn-click-2" data-cls-ext='{"position":"top","color":"blue"}'>
-            按钮 2
+            🎯 按钮 2
           </button>
           <button class="btn btn-success" data-cls="btn-click-3" data-cls-ext='{"position":"top","color":"green"}'>
-            按钮 3
+            ✅ 按钮 3
           </button>
         </div>
       </div>
 
       <div class="section">
-        <h2>曝光事件测试</h2>
+        <h2>👁️ 曝光事件测试</h2>
         <p class="hint">滚动下方区域，当元素进入视口并停留 500ms 后触发曝光事件</p>
         <div class="exposure-box">
-          <div class="exposure-item" data-cls="exp-1" data-cls-ext='{"section":"scroll","index":1}'>曝光元素 1</div>
-          <div class="exposure-item" data-cls="exp-2" data-cls-ext='{"section":"scroll","index":2}'>曝光元素 2</div>
-          <div class="exposure-item" data-cls="exp-3" data-cls-ext='{"section":"scroll","index":3}'>曝光元素 3</div>
-          <div class="exposure-item" data-cls="exp-4" data-cls-ext='{"section":"scroll","index":4}'>曝光元素 4</div>
-          <div class="exposure-item" data-cls="exp-5" data-cls-ext='{"section":"scroll","index":5}'>曝光元素 5</div>
+          <div class="exposure-item" data-cls="exp-1" data-cls-ext='{"section":"scroll","index":1}'>👁️ 曝光元素 1</div>
+          <div class="exposure-item" data-cls="exp-2" data-cls-ext='{"section":"scroll","index":2}'>👁️ 曝光元素 2</div>
+          <div class="exposure-item" data-cls="exp-3" data-cls-ext='{"section":"scroll","index":3}'>👁️ 曝光元素 3</div>
+          <div class="exposure-item" data-cls="exp-4" data-cls-ext='{"section":"scroll","index":4}'>👁️ 曝光元素 4</div>
+          <div class="exposure-item" data-cls="exp-5" data-cls-ext='{"section":"scroll","index":5}'>👁️ 曝光元素 5</div>
         </div>
       </div>
 
       <div class="section">
-        <h2>事件统计</h2>
+        <h2>📈 事件统计分析</h2>
         <div class="stats">
           <div class="stat-item">
             <div class="stat-value" id="totalCount">0</div>
@@ -185,16 +305,16 @@
       </div>
 
       <div class="section">
-        <h2>事件日志</h2>
+        <h2>📋 实时事件日志</h2>
         <div class="event-log" id="eventLog">
           <div style="color: #6a9955">// 等待事件...</div>
         </div>
       </div>
 
       <div class="section">
-        <h2>操作</h2>
-        <button class="btn btn-primary" onclick="clearEvents()">清空事件</button>
-        <button class="btn btn-success" onclick="getEvents()">获取所有事件</button>
+        <h2>🔧 事件管理</h2>
+        <button class="btn btn-primary" onclick="clearEvents()">🗑️ 清空事件</button>
+        <button class="btn btn-success" onclick="getEvents()">📥 获取所有事件</button>
       </div>
     </div>
 

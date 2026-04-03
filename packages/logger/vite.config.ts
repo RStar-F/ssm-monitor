@@ -12,6 +12,6 @@ export default defineConfig(() => mergeConfig(viteBaseConfig, {
   },
   server: {
     open: '/index.html',
-    port: 3007
+    port: 3008
   }
 }));
