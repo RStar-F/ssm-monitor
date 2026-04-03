@@ -1,0 +1,298 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>性能监测模块测试</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+      .metrics-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 15px;
+      }
+      .metric-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        text-align: center;
+      }
+      .metric-value {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+      .metric-label {
+        font-size: 12px;
+        opacity: 0.9;
+      }
+      .metric-unit {
+        font-size: 14px;
+        margin-left: 2px;
+      }
+      .event-log {
+        max-height: 400px;
+        overflow-y: auto;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .event-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #2d2d2d;
+        border-radius: 4px;
+      }
+      .event-type {
+        font-weight: bold;
+      }
+      .event-type.metrics {
+        color: #4ec9b0;
+      }
+      .event-type.resource {
+        color: #ce9178;
+      }
+      .event-type.api {
+        color: #dcdcaa;
+      }
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #1890ff;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #40a9ff;
+      }
+      .btn-success {
+        background: #52c41a;
+        color: white;
+      }
+      .btn-success:hover {
+        background: #73d13d;
+      }
+      .btn-warning {
+        background: #faad14;
+        color: white;
+      }
+      .btn-warning:hover {
+        background: #ffc53d;
+      }
+      .api-test {
+        margin-top: 15px;
+        padding: 15px;
+        background: #f0f2f5;
+        border-radius: 6px;
+      }
+      .hint {
+        color: #999;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>⚡ 性能监测模块测试</h1>
+
+      <div class="section">
+        <h2>页面性能指标</h2>
+        <p class="hint">页面加载性能数据将在页面加载完成后自动收集</p>
+        <div class="metrics-grid" id="metricsGrid">
+          <div class="metric-card">
+            <div class="metric-value" id="dns">-</div>
+            <div class="metric-label">DNS查询</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="tcp">-</div>
+            <div class="metric-label">TCP连接</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="ttfb">-</div>
+            <div class="metric-label">首字节时间</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="fp">-</div>
+            <div class="metric-label">首次绘制</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="fcp">-</div>
+            <div class="metric-label">首次内容绘制</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-value" id="lcp">-</div>
+            <div class="metric-label">最大内容绘制</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>API测试</h2>
+        <p class="hint">点击下方按钮测试API请求监控（请求时长超过10秒才会被记录）</p>
+        <div class="api-test">
+          <button class="btn btn-primary" onclick="testFetch()">测试 Fetch 请求</button>
+          <button class="btn btn-success" onclick="testXHR()">测试 XHR 请求</button>
+          <button class="btn btn-warning" onclick="testSlowAPI()">测试慢速API</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>事件日志</h2>
+        <div class="event-log" id="eventLog">
+          <div style="color: #6a9955">// 等待性能事件...</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>操作</h2>
+        <button class="btn btn-primary" onclick="getEvents()">获取所有事件</button>
+        <button class="btn btn-warning" onclick="clearEvents()">清空事件</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { PerformanceMonitor } from "./src/index.ts";
+
+      // 创建性能监控实例
+      window.monitor = new PerformanceMonitor({
+        metrics: true,
+        resource: true,
+        api: true,
+        resourceTimeout: 0, // 记录所有资源
+        apiTimeout: 0, // 记录所有API请求
+      });
+
+      // 监听事件
+      monitor.onEvent = function (event) {
+        console.log("性能事件:", event);
+        addLog(event);
+
+        // 更新指标显示
+        if (event.eventType === "metrics") {
+          updateMetrics(event.data);
+        }
+      };
+
+      // 更新指标显示
+      function updateMetrics(data) {
+        document.getElementById("dns").textContent = data.dns.toFixed(0) + "ms";
+        document.getElementById("tcp").textContent = data.tcp.toFixed(0) + "ms";
+        document.getElementById("ttfb").textContent = data.ttfb.toFixed(0) + "ms";
+        document.getElementById("fp").textContent = data.fp.toFixed(0) + "ms";
+        document.getElementById("fcp").textContent = data.fcp.toFixed(0) + "ms";
+        document.getElementById("lcp").textContent = data.lcp.toFixed(0) + "ms";
+      }
+
+      // 添加日志
+      function addLog(event) {
+        const log = document.getElementById("eventLog");
+        const item = document.createElement("div");
+        item.className = "event-item";
+
+        let content = `<span class="event-type ${event.eventType}">[${event.eventType.toUpperCase()}]</span> `;
+
+        if (event.eventType === "metrics") {
+          const d = event.data;
+          content += `DNS: ${d.dns.toFixed(0)}ms, TCP: ${d.tcp.toFixed(0)}ms, TTFB: ${d.ttfb.toFixed(0)}ms, FP: ${d.fp.toFixed(0)}ms, FCP: ${d.fcp.toFixed(0)}ms`;
+        } else if (event.eventType === "resource") {
+          const d = event.data;
+          content += `${d.type}: ${d.name.substring(0, 50)}... (${d.duration.toFixed(0)}ms, ${(d.size / 1024).toFixed(1)}KB)`;
+        } else if (event.eventType === "api") {
+          const d = event.data;
+          content += `${d.method} ${d.url.substring(0, 50)}... (${d.duration.toFixed(0)}ms, status: ${d.status})`;
+        }
+
+        content += `<br><span style="color: #6a9955; font-size: 11px;">${new Date(event.time).toLocaleString()}</span>`;
+        item.innerHTML = content;
+        log.insertBefore(item, log.firstChild);
+      }
+
+      // 测试Fetch请求
+      window.testFetch = async function () {
+        try {
+          const response = await fetch("https://jsonplaceholder.typicode.com/posts/1");
+          const data = await response.json();
+          console.log("Fetch响应:", data);
+        } catch (e) {
+          console.error("Fetch错误:", e);
+        }
+      };
+
+      // 测试XHR请求
+      window.testXHR = function () {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", "https://jsonplaceholder.typicode.com/posts/2");
+        xhr.onload = function () {
+          console.log("XHR响应:", JSON.parse(xhr.responseText));
+        };
+        xhr.send();
+      };
+
+      // 测试慢速API
+      window.testSlowAPI = async function () {
+        try {
+          // 使用延迟API模拟慢速请求
+          const response = await fetch("https://jsonplaceholder.typicode.com/posts?_delay=2000");
+          const data = await response.json();
+          console.log("慢速API响应:", data);
+        } catch (e) {
+          console.error("慢速API错误:", e);
+        }
+      };
+
+      // 获取所有事件
+      window.getEvents = function () {
+        const events = monitor.getEvents();
+        console.log("所有性能事件:", events);
+        alert("事件总数: " + events.length + "\n查看控制台获取详细信息");
+      };
+
+      // 清空事件
+      window.clearEvents = function () {
+        monitor.clearEvents();
+        document.getElementById("eventLog").innerHTML = '<div style="color: #6a9955;">// 事件已清空</div>';
+      };
+    </script>
+  </body>
+</html>

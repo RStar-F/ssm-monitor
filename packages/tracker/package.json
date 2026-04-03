@@ -1,0 +1,26 @@
+{
+  "name": "@ssm/tracker",
+  "version": "1.0.0",
+  "description": "埋点模块 - 支持点击和曝光事件追踪",
+  "type": "module",
+  "main": "./dist/tracker.umd.cjs",
+  "module": "./dist/tracker.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/tracker.js",
+      "require": "./dist/tracker.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  }
+}

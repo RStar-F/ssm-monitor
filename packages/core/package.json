@@ -1,0 +1,40 @@
+{
+  "name": "@ssm/core",
+  "version": "1.0.0",
+  "description": "核心模块 - 整合所有监控子模块的统一入口",
+  "type": "module",
+  "main": "./dist/ssm.umd.cjs",
+  "module": "./dist/ssm.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/ssm.js",
+      "require": "./dist/ssm.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ssm/tracker": "workspace:*",
+    "@ssm/logger": "workspace:*",
+    "@ssm/performance": "workspace:*",
+    "@ssm/error": "workspace:*",
+    "@ssm/blank-screen": "workspace:*",
+    "@ssm/storage": "workspace:*",
+    "@ssm/reporter": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3",
+    "vite": "^5.0.10",
+    "vitest": "^1.1.0"
+  }
+}

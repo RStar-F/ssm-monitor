@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>上报模块测试</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #1890ff;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #40a9ff;
+      }
+      .btn-success {
+        background: #52c41a;
+        color: white;
+      }
+      .btn-success:hover {
+        background: #73d13d;
+      }
+      .btn-warning {
+        background: #faad14;
+        color: white;
+      }
+      .btn-warning:hover {
+        background: #ffc53d;
+      }
+      .stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+      .stat-item {
+        background: #f0f2f5;
+        padding: 15px 25px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1890ff;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+      .report-log {
+        max-height: 400px;
+        overflow-y: auto;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .report-item {
+        margin-bottom: 8px;
+        padding: 10px;
+        background: #2d2d2d;
+        border-radius: 4px;
+      }
+      .report-item.success {
+        border-left: 3px solid #52c41a;
+      }
+      .report-item.error {
+        border-left: 3px solid #ff4d4f;
+      }
+      .report-type {
+        color: #4ec9b0;
+        font-weight: bold;
+      }
+      .report-time {
+        color: #6a9955;
+        font-size: 11px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+      .form-group input,
+      .form-group textarea {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .form-group textarea {
+        min-height: 80px;
+        font-family: monospace;
+      }
+      .hint {
+        color: #999;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .config-info {
+        background: #e6f7ff;
+        padding: 10px 15px;
+        border-radius: 6px;
+        border: 1px solid #91d5ff;
+        margin-bottom: 15px;
+      }
+      .config-info code {
+        background: #d6e4ff;
+        padding: 2px 6px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>📤 上报模块测试</h1>
+
+      <div class="section">
+        <h2>上报统计</h2>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="totalCount">0</div>
+            <div class="stat-label">总上报数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="successCount">0</div>
+            <div class="stat-label">成功数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="failCount">0</div>
+            <div class="stat-label">失败数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="queueCount">0</div>
+            <div class="stat-label">队列数</div>
+          </div>
+        </div>
+
+        <div class="config-info">
+          <strong>当前配置：</strong>
+          上报URL: <code id="reportUrl">-</code> | 批量大小: <code id="batchSize">10</code> | 批量超时:
+          <code id="batchTimeout">5000ms</code> | 上报方式: <code id="reportMethod">-</code>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>测试上报</h2>
+        <div class="form-group">
+          <label>上报URL</label>
+          <input type="text" id="urlInput" placeholder="输入上报URL" value="https://httpbin.org/post" />
+        </div>
+        <div class="form-group">
+          <label>数据类型</label>
+          <input type="text" id="typeInput" placeholder="数据类型" value="test" />
+        </div>
+        <div class="form-group">
+          <label>数据内容 (JSON)</label>
+          <textarea id="dataInput" placeholder="输入JSON数据">{"message": "测试数据", "value": 123}</textarea>
+        </div>
+        <div>
+          <button class="btn btn-primary" onclick="initReporter()">初始化上报器</button>
+          <button class="btn btn-success" onclick="sendReport()">发送上报</button>
+          <button class="btn btn-success" onclick="sendBatchReports()">批量上报10条</button>
+          <button class="btn btn-warning" onclick="flushReports()">立即上报</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>上报日志</h2>
+        <div class="report-log" id="reportLog">
+          <div style="color: #6a9955">// 等待上报事件...</div>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { Reporter } from "./src/index.ts";
+
+      let reporter = null;
+      let totalCount = 0;
+      let successCount = 0;
+      let failCount = 0;
+
+      // 初始化上报器
+      window.initReporter = function () {
+        const url = document.getElementById("urlInput").value;
+
+        if (!url) {
+          alert("请输入上报URL");
+          return;
+        }
+
+        if (reporter) {
+          reporter.destroy();
+        }
+
+        reporter = new Reporter({
+          url,
+          batchSize: 10,
+          batchTimeout: 5000,
+          useBeacon: true,
+          retryTimes: 3,
+        });
+
+        // 监听上报结果
+        reporter.onReport = function (result) {
+          totalCount++;
+          if (result.success) {
+            successCount++;
+          } else {
+            failCount++;
+          }
+          updateStats();
+          addLog(result);
+        };
+
+        document.getElementById("reportUrl").textContent = url;
+        document.getElementById("batchSize").textContent = "10";
+        document.getElementById("batchTimeout").textContent = "5000ms";
+        document.getElementById("reportMethod").textContent = "sendBeacon -> fetch -> XHR";
+
+        addLog({ success: true, data: [], message: "上报器初始化成功" });
+      };
+
+      // 发送上报
+      window.sendReport = function () {
+        if (!reporter) {
+          alert("请先初始化上报器");
+          return;
+        }
+
+        const type = document.getElementById("typeInput").value || "test";
+        const dataStr = document.getElementById("dataInput").value;
+
+        let data;
+        try {
+          data = JSON.parse(dataStr);
+        } catch {
+          data = { raw: dataStr };
+        }
+
+        reporter.report({
+          type,
+          data,
+          timestamp: Date.now(),
+        });
+
+        updateQueueCount();
+      };
+
+      // 批量上报
+      window.sendBatchReports = function () {
+        if (!reporter) {
+          alert("请先初始化上报器");
+          return;
+        }
+
+        for (let i = 0; i < 10; i++) {
+          reporter.report({
+            type: "batch",
+            data: { index: i, message: `批量数据 ${i + 1}` },
+            timestamp: Date.now() + i,
+          });
+        }
+
+        updateQueueCount();
+      };
+
+      // 立即上报
+      window.flushReports = async function () {
+        if (!reporter) {
+          alert("请先初始化上报器");
+          return;
+        }
+
+        await reporter.flush();
+        updateQueueCount();
+      };
+
+      // 更新统计
+      function updateStats() {
+        document.getElementById("totalCount").textContent = totalCount;
+        document.getElementById("successCount").textContent = successCount;
+        document.getElementById("failCount").textContent = failCount;
+      }
+
+      // 更新队列数
+      function updateQueueCount() {
+        // 队列数无法直接访问，这里用估算
+      }
+
+      // 添加日志
+      function addLog(result) {
+        const log = document.getElementById("reportLog");
+        const item = document.createElement("div");
+        item.className = "report-item " + (result.success ? "success" : "error");
+
+        const status = result.success ? "✅ 成功" : "❌ 失败";
+        const message = result.message || `上报 ${result.data?.length || 0} 条数据`;
+
+        item.innerHTML = `
+        <div><span class="report-type">${status}</span> - ${message}</div>
+        ${result.error ? `<div style="color: #ff4d4f;">错误: ${result.error.message}</div>` : ""}
+        <div class="report-time">${new Date().toLocaleString()}</div>
+      `;
+        log.insertBefore(item, log.firstChild);
+      }
+
+      // 初始化
+      initReporter();
+    </script>
+  </body>
+</html>

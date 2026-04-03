@@ -1,0 +1,26 @@
+{
+  "name": "@ssm/error",
+  "version": "1.0.0",
+  "description": "错误监测模块 - 监听同步/异步错误、资源加载错误",
+  "type": "module",
+  "main": "./dist/error.umd.cjs",
+  "module": "./dist/error.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/error.js",
+      "require": "./dist/error.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  }
+}

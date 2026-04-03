@@ -1,0 +1,26 @@
+{
+  "name": "@ssm/blank-screen",
+  "version": "1.0.0",
+  "description": "白屏监测模块 - 使用重要DOM节点和采样综合监听页面白屏",
+  "type": "module",
+  "main": "./dist/blank-screen.umd.cjs",
+  "module": "./dist/blank-screen.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/blank-screen.js",
+      "require": "./dist/blank-screen.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  }
+}

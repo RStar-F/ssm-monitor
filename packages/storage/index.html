@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>存储模块测试</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .btn-primary {
+        background: #1890ff;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #40a9ff;
+      }
+      .btn-danger {
+        background: #ff4d4f;
+        color: white;
+      }
+      .btn-danger:hover {
+        background: #ff7875;
+      }
+      .btn-success {
+        background: #52c41a;
+        color: white;
+      }
+      .btn-success:hover {
+        background: #73d13d;
+      }
+      .stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+      .stat-item {
+        background: #f0f2f5;
+        padding: 15px 25px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #1890ff;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+      .item-list {
+        max-height: 400px;
+        overflow-y: auto;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .item {
+        margin-bottom: 8px;
+        padding: 10px;
+        background: #2d2d2d;
+        border-radius: 4px;
+      }
+      .item-id {
+        color: #4ec9b0;
+      }
+      .item-type {
+        color: #ce9178;
+      }
+      .item-time {
+        color: #6a9955;
+        font-size: 11px;
+      }
+      .form-group {
+        margin-bottom: 15px;
+      }
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #666;
+      }
+      .form-group input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .form-group select {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+      .hint {
+        color: #999;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>💾 存储模块测试</h1>
+
+      <div class="section">
+        <h2>存储统计</h2>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="itemCount">0</div>
+            <div class="stat-label">存储数量</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="storageType">-</div>
+            <div class="stat-label">存储类型</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>添加数据</h2>
+        <div class="form-group">
+          <label>数据类型</label>
+          <select id="itemType">
+            <option value="event">事件</option>
+            <option value="error">错误</option>
+            <option value="performance">性能</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>数据内容</label>
+          <input type="text" id="itemData" placeholder="输入数据内容" value="测试数据" />
+        </div>
+        <button class="btn btn-primary" onclick="addItem()">添加数据</button>
+        <button class="btn btn-success" onclick="addBatchItems()">批量添加10条</button>
+      </div>
+
+      <div class="section">
+        <h2>数据列表</h2>
+        <div class="item-list" id="itemList">
+          <div style="color: #6a9955">// 暂无数据</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>操作</h2>
+        <button class="btn btn-primary" onclick="refreshList()">刷新列表</button>
+        <button class="btn btn-danger" onclick="clearAll()">清空所有</button>
+      </div>
+    </div>
+
+    <script type="module">
+      import { StorageManager } from "./src/index.ts";
+
+      // 创建存储实例
+      window.storage = new StorageManager({
+        dbName: "ssm_sdk_test",
+        storeName: "test_events",
+        maxItems: 100,
+        useIndexedDB: true,
+      });
+
+      // 显示存储类型
+      document.getElementById("storageType").textContent = "indexedDB" in window ? "IndexedDB" : "LocalStorage";
+
+      // 刷新列表
+      async function refreshList() {
+        const items = await storage.getAll();
+        document.getElementById("itemCount").textContent = items.length;
+
+        const list = document.getElementById("itemList");
+        if (items.length === 0) {
+          list.innerHTML = '<div style="color: #6a9955;">// 暂无数据</div>';
+          return;
+        }
+
+        list.innerHTML = items
+          .map(
+            (item) => `
+        <div class="item">
+          <div><span class="item-id">ID: ${item.id}</span></div>
+          <div><span class="item-type">类型: ${item.type || "unknown"}</span></div>
+          <div>数据: ${JSON.stringify(item.data)}</div>
+          <div class="item-time">${new Date(item.timestamp).toLocaleString()}</div>
+        </div>
+      `,
+          )
+          .join("");
+      }
+
+      window.refreshList = refreshList;
+
+      // 添加数据
+      window.addItem = async function () {
+        const type = document.getElementById("itemType").value;
+        const data = document.getElementById("itemData").value;
+
+        await storage.add({
+          id: `item_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          data: { content: data },
+          timestamp: Date.now(),
+          type,
+        });
+
+        document.getElementById("itemData").value = "";
+        refreshList();
+      };
+
+      // 批量添加
+      window.addBatchItems = async function () {
+        for (let i = 0; i < 10; i++) {
+          await storage.add({
+            id: `batch_${Date.now()}_${i}_${Math.random().toString(36).substr(2, 9)}`,
+            data: { content: `批量数据 ${i + 1}` },
+            timestamp: Date.now() + i,
+            type: "batch",
+          });
+        }
+        refreshList();
+      };
+
+      // 清空所有
+      window.clearAll = async function () {
+        if (confirm("确定要清空所有数据吗？")) {
+          await storage.clear();
+          refreshList();
+        }
+      };
+
+      // 初始化
+      refreshList();
+    </script>
+  </body>
+</html>

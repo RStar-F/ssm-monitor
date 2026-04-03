@@ -1,0 +1,29 @@
+{
+  "name": "@ssm/reporter",
+  "version": "1.0.0",
+  "description": "上报模块 - 支持sendBeacon、fetch、XHR降级上报",
+  "type": "module",
+  "main": "./dist/reporter.umd.cjs",
+  "module": "./dist/reporter.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/reporter.js",
+      "require": "./dist/reporter.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@ssm/logger": "workspace:*"
+  }
+}

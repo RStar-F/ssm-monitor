@@ -1,0 +1,26 @@
+{
+  "name": "@ssm/performance",
+  "version": "1.0.0",
+  "description": "性能监测模块 - 监听页面性能指标、接口响应、静态资源加载",
+  "type": "module",
+  "main": "./dist/performance.umd.cjs",
+  "module": "./dist/performance.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/performance.js",
+      "require": "./dist/performance.umd.cjs",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build && tsc --emitDeclarationOnly",
+    "preview": "vite preview",
+    "test": "vitest",
+    "clean": "rm -rf dist"
+  }
+}

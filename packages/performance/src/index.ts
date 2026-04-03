@@ -1,0 +1,2 @@
+export { PerformanceMonitor } from './performance';
+export type { PerformanceConfig, PerformanceMetrics, ResourceTiming, APITiming, PerformanceEvent, PerformanceEventType, ResourceType } from './types';

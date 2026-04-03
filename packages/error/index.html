@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>错误监测模块测试</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        padding: 20px;
+        background: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      h1 {
+        color: #333;
+        margin-bottom: 20px;
+      }
+      .section {
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        color: #666;
+        margin-bottom: 15px;
+        font-size: 18px;
+      }
+      .btn {
+        padding: 10px 20px;
+        margin: 5px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+      .btn-danger {
+        background: #ff4d4f;
+        color: white;
+      }
+      .btn-danger:hover {
+        background: #ff7875;
+      }
+      .btn-warning {
+        background: #faad14;
+        color: white;
+      }
+      .btn-warning:hover {
+        background: #ffc53d;
+      }
+      .btn-primary {
+        background: #1890ff;
+        color: white;
+      }
+      .btn-primary:hover {
+        background: #40a9ff;
+      }
+      .event-log {
+        max-height: 400px;
+        overflow-y: auto;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 15px;
+        border-radius: 6px;
+        font-family: "Monaco", "Menlo", monospace;
+        font-size: 12px;
+        line-height: 1.6;
+      }
+      .event-item {
+        margin-bottom: 10px;
+        padding: 10px;
+        background: #2d2d2d;
+        border-radius: 4px;
+        border-left: 3px solid #ff4d4f;
+      }
+      .event-type {
+        font-weight: bold;
+        color: #ff4d4f;
+      }
+      .event-message {
+        color: #d4d4d4;
+        margin: 5px 0;
+        word-break: break-all;
+      }
+      .event-stack {
+        color: #888;
+        font-size: 11px;
+        white-space: pre-wrap;
+      }
+      .event-time {
+        color: #6a9955;
+        font-size: 11px;
+      }
+      .hint {
+        color: #999;
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .stats {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 15px;
+      }
+      .stat-item {
+        background: #f0f2f5;
+        padding: 15px 25px;
+        border-radius: 6px;
+        text-align: center;
+      }
+      .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        color: #ff4d4f;
+      }
+      .stat-label {
+        font-size: 12px;
+        color: #666;
+        margin-top: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🐛 错误监测模块测试</h1>
+
+      <div class="section">
+        <h2>错误统计</h2>
+        <div class="stats">
+          <div class="stat-item">
+            <div class="stat-value" id="totalCount">0</div>
+            <div class="stat-label">总错误数</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="jsCount">0</div>
+            <div class="stat-label">JS错误</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="promiseCount">0</div>
+            <div class="stat-label">Promise错误</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value" id="resourceCount">0</div>
+            <div class="stat-label">资源错误</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>错误测试</h2>
+        <p class="hint">点击下方按钮触发不同类型的错误</p>
+        <div>
+          <button class="btn btn-danger" onclick="testJSError()">测试 JS 错误</button>
+          <button class="btn btn-danger" onclick="testPromiseError()">测试 Promise 错误</button>
+          <button class="btn btn-warning" onclick="testResourceError()">测试资源加载错误</button>
+          <button class="btn btn-primary" onclick="testManualError()">手动上报错误</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>错误日志</h2>
+        <div class="event-log" id="eventLog">
+          <div style="color: #6a9955">// 等待错误事件...</div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>操作</h2>
+        <button class="btn btn-primary" onclick="getEvents()">获取所有错误</button>
+        <button class="btn btn-warning" onclick="clearEvents()">清空错误</button>
+      </div>
+    </div>
+
+    <!-- 故意引入一个不存在的资源来测试资源错误 -->
+    <img src="not-exist.jpg" style="display: none" alt="测试资源错误" />
+
+    <script type="module">
+      import { ErrorMonitor } from "./src/index.ts";
+
+      // 创建错误监控实例
+      window.monitor = new ErrorMonitor({
+        js: true,
+        resource: true,
+        promise: true,
+        captureConsole: true,
+      });
+
+      // 错误计数
+      let jsCount = 0;
+      let promiseCount = 0;
+      let resourceCount = 0;
+
+      // 监听错误
+      monitor.onEvent = function (event) {
+        console.log("错误事件:", event);
+
+        // 更新计数
+        if (event.type === "js") {
+          jsCount++;
+          document.getElementById("jsCount").textContent = jsCount;
+        } else if (event.type === "promise") {
+          promiseCount++;
+          document.getElementById("promiseCount").textContent = promiseCount;
+        } else if (event.type === "resource") {
+          resourceCount++;
+          document.getElementById("resourceCount").textContent = resourceCount;
+        }
+        document.getElementById("totalCount").textContent = jsCount + promiseCount + resourceCount;
+
+        // 添加日志
+        const log = document.getElementById("eventLog");
+        const item = document.createElement("div");
+        item.className = "event-item";
+        item.innerHTML = `
+        <div><span class="event-type">[${event.type.toUpperCase()}]</span></div>
+        <div class="event-message">${escapeHtml(event.message)}</div>
+        ${event.filename ? `<div style="color: #888; font-size: 11px;">${escapeHtml(event.filename)}:${event.lineno}:${event.colno}</div>` : ""}
+        ${event.stack ? `<div class="event-stack">${escapeHtml(event.stack.substring(0, 200))}...</div>` : ""}
+        <div class="event-time">${new Date(event.time).toLocaleString()}</div>
+      `;
+        log.insertBefore(item, log.firstChild);
+      };
+
+      // HTML转义
+      function escapeHtml(str) {
+        const div = document.createElement("div");
+        div.textContent = str;
+        return div.innerHTML;
+      }
+
+      // 测试JS错误
+      window.testJSError = function () {
+        throw new Error("这是一个测试JS错误");
+      };
+
+      // 测试Promise错误
+      window.testPromiseError = function () {
+        Promise.reject("这是一个测试Promise错误");
+      };
+
+      // 测试资源错误
+      window.testResourceError = function () {
+        const img = new Image();
+        img.src = "not-exist-resource-" + Date.now() + ".js";
+      };
+
+      // 手动上报错误
+      window.testManualError = function () {
+        monitor.captureError("这是一个手动上报的错误", { custom: "额外信息" });
+      };
+
+      // 获取所有错误
+      window.getEvents = function () {
+        const events = monitor.getEvents();
+        console.log("所有错误:", events);
+        alert("错误总数: " + events.length + "\n查看控制台获取详细信息");
+      };
+
+      // 清空错误
+      window.clearEvents = function () {
+        monitor.clearEvents();
+        jsCount = 0;
+        promiseCount = 0;
+        resourceCount = 0;
+        document.getElementById("jsCount").textContent = "0";
+        document.getElementById("promiseCount").textContent = "0";
+        document.getElementById("resourceCount").textContent = "0";
+        document.getElementById("totalCount").textContent = "0";
+        document.getElementById("eventLog").innerHTML = '<div style="color: #6a9955;">// 错误已清空</div>';
+      };
+    </script>
+  </body>
+</html>
